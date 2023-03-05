@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "ES6",
+    "target": "ES5",
     "module": "ES2022" /* Specify what module code is generated. */,
     "rootDir": "./src" /* Specify the root folder within your source files. */,
     "moduleResolution": "node" /* Specify how TypeScript looks up a file from a given module specifier. */,
+    "resolveJsonModule": true,
     "outDir": "./dist" /* Specify an output folder for all emitted files. */,
     "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
     "strict": true /* Enable all strict type-checking options. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true, // for debug
-    "resolveJsonModule": true
+    "sourceMap": true // for debug
   },
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "src/routes/index.ts"],
   "exclude": ["node_modules"]
 }
