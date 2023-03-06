@@ -35,17 +35,26 @@ const creatArticle = async ({
   return { id: ++id, ...article };
 };
 
+const getArticlesByRestaurantId = async (restaurantId: number) => {
+  return test_articles.filter(
+    (article) => article.restaurantId === restaurantId,
+  );
+};
+
 const getArticleById = async ({
   restaurantId,
   userId,
 }: {
-  restaurantId: string;
-  userId: string;
-}): Promise<Article> => {
+  restaurantId: number;
+  userId: number;
+}): Promise<Article[]> => {
   console.log(
     `return get Article by restaurantId! ${restaurantId} & ${userId}`,
   );
-  return test_articles[0];
+  return test_articles.filter(
+    (article) =>
+      article.restaurantId === restaurantId && article.userId === userId,
+  );
 };
 
-export { creatArticle, getArticleById };
+export { creatArticle, getArticlesByRestaurantId, getArticleById };

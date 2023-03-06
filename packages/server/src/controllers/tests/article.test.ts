@@ -2,13 +2,12 @@ import { faker } from '@faker-js/faker';
 import { Request, Response } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
 import * as articleController from '../../controllers/article';
-import { Article } from '../../database/data';
+import { Article, test_articles } from '../../database/data';
 
 describe('Article Controller', () => {
-  let articleService: any;
-  beforeEach(() => {
-    articleService = {};
-  });
+  let req;
+  let res;
+
   describe('create article', () => {
     let article: Article;
     let req: MockRequest<Request>;
@@ -33,7 +32,6 @@ describe('Article Controller', () => {
         content: req.body.content,
         path: req.body.path,
       };
-      articleService.createArticle = jest.fn(() => article);
 
       // when
       await articleController.createArticle(req, res);
@@ -44,34 +42,72 @@ describe('Article Controller', () => {
     });
   });
 
-  // it('get article by restaurant id', async () => {
-  //   // given
-  //   // const restaurantId = faker.random.alphaNumeric(16);
-  //   // const userId = faker.random.alphaNumeric(16);
-  //   const restaurantId = 1;
-  //   const userId = 1;
-  //   const req = httpMocks.createRequest({ query: { restaurantId, userId } });
-  //   const res = httpMocks.createResponse();
-  //   const article = {
-  //     // id: faker.random.alphaNumeric(16),
-  //     // content: faker.random.words(5),
-  //     // path: faker.system.directoryPath(),
-  //     id: 1,
-  //     userId,
-  //     restaurantId,
-  //     content: '맛있다!!',
-  //     path: '대왕판교로',
-  //   };
-  //   articleService.getArticleById = jest.fn(() => article);
+  describe('read article', () => {
+    it("get restaurant's all articles by restaurant id", async () => {
+      // given
+      const restaurantId = 1; // db access
+      req = httpMocks.createRequest({ query: { restaurantId } });
+      res = httpMocks.createResponse();
 
-  //   // when
-  //   await articleController.getArticleById(req, res);
+      // when
+      await articleController.getArticlesByRestaurantId(req, res);
 
-  //   // then
-  //   console.log(res._getJSONData());
-  //   expect(res.statusCode).toBe(200);
-  //   expect(res._getJSONData()).toEqual(article);
-  // });
+      // then
+      expect(res.statusCode).toBe(200);
+      expect(res._getJSONData()).toEqual(
+        test_articles.filter(
+          (article) => article.restaurantId === restaurantId,
+        ),
+      );
+    });
+
+    it('returns 404 when there is no article with given restaurant id', async () => {
+      // given
+      const restaurantId = 0; // db access
+      req = httpMocks.createRequest({ query: { restaurantId } });
+      res = httpMocks.createResponse();
+
+      // when
+      await articleController.getArticlesByRestaurantId(req, res);
+
+      // then
+      expect(res.statusCode).toBe(404);
+    });
+
+    it('get article by restaurant id and user id', async () => {
+      // given
+      const restaurantId = 1;
+      const userId = 1;
+      req = httpMocks.createRequest({ query: { restaurantId, userId } });
+      res = httpMocks.createResponse();
+
+      // when
+      await articleController.getArticlesByIds(req, res);
+
+      // then
+      expect(res.statusCode).toBe(200);
+      expect(res._getJSONData()).toEqual(
+        test_articles.filter(
+          (article) =>
+            article.userId === userId && article.restaurantId === restaurantId,
+        ),
+      );
+    });
+
+    it('returns 404 when there is no article with given restaurant and user ids', async () => {
+      // given
+      const restaurantId = 0; // db access
+      const userId = 0;
+      req = httpMocks.createRequest({ query: { restaurantId, userId } });
+      res = httpMocks.createResponse();
+
+      // when
+      await articleController.getArticlesByRestaurantId(req, res);
+
+      // then
+      expect(res.statusCode).toBe(404);
+    });
+  });
 
   // 수정
 

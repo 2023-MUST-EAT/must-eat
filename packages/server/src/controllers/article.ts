@@ -20,10 +20,30 @@ const createArticle = async (req: Request, res: Response) => {
   }
 };
 
-const getArticleById = async (req: Request, res: Response) => {
-  const { restaurantId, userId } = req.params;
-  const data = await articleService.getArticleById({ restaurantId, userId });
+const getArticlesByRestaurantId = async (req: Request, res: Response) => {
+  const { restaurantId } = req.query;
+  const data = await articleService
+    .getArticlesByRestaurantId(Number(restaurantId))
+    .catch((e) => console.error(e));
+
+  // 추후 검증 로직 수정
+  if (data?.length === 0) return res.sendStatus(404);
+
   res.status(200).json(data);
 };
 
-export { createArticle, getArticleById };
+const getArticlesByIds = async (req: Request, res: Response) => {
+  const { restaurantId, userId } = req.query;
+  const data = await articleService
+    .getArticleById({
+      restaurantId: Number(restaurantId),
+      userId: Number(userId),
+    })
+    .catch((e) => console.error(e));
+
+  if (data?.length === 0) return res.sendStatus(404);
+
+  res.status(200).json(data);
+};
+
+export { createArticle, getArticlesByRestaurantId, getArticlesByIds };

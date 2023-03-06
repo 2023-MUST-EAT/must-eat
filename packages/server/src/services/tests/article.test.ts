@@ -20,10 +20,14 @@ describe('Article Service', () => {
 
     it('should throw 404 Error when restaurant does not exist in database', async () => {
       // given
-      restaurantService.findById = jest.fn(() => undefined);
+      // restaurantService.findById = jest.fn(() => undefined);
+      restaurantId = 0;
 
       // when
-      const res = await articleService.creatArticle(article);
+      const res = await articleService.creatArticle({
+        ...article,
+        restaurantId,
+      });
 
       // then
       expect(res).toBe('Restaurant does not exist!');
