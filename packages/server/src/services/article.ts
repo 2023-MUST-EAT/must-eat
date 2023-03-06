@@ -48,13 +48,33 @@ const getArticleById = async ({
   restaurantId: number;
   userId: number;
 }): Promise<Article[]> => {
-  console.log(
-    `return get Article by restaurantId! ${restaurantId} & ${userId}`,
-  );
   return test_articles.filter(
     (article) =>
       article.restaurantId === restaurantId && article.userId === userId,
   );
 };
 
-export { creatArticle, getArticlesByRestaurantId, getArticleById };
+const updateArticle = async (updateTo: Article): Promise<Article | void> => {
+  let article: Article | undefined = test_articles.find(
+    (article) => article.id === updateTo.id,
+  );
+
+  if (!article) {
+    throw 'article not found!';
+  }
+
+  if (article.userId !== updateTo.userId) {
+    throw 'user id is not matching!';
+  }
+
+  article = { ...updateTo };
+
+  return article;
+};
+
+export {
+  creatArticle,
+  getArticlesByRestaurantId,
+  getArticleById,
+  updateArticle,
+};
