@@ -50,7 +50,7 @@ describe('Article Controller', () => {
       res = httpMocks.createResponse();
 
       // when
-      await articleController.getArticlesByRestaurantId(req, res);
+      await articleController.getArticlesById(req, res);
 
       // then
       expect(res.statusCode).toBe(200);
@@ -68,7 +68,7 @@ describe('Article Controller', () => {
       res = httpMocks.createResponse();
 
       // when
-      await articleController.getArticlesByRestaurantId(req, res);
+      await articleController.getArticlesById(req, res);
 
       // then
       expect(res.statusCode).toBe(404);
@@ -85,7 +85,7 @@ describe('Article Controller', () => {
       res = httpMocks.createResponse();
 
       // when
-      await articleController.getArticlesByIds(req, res);
+      await articleController.getArticlesById(req, res);
 
       // then
       expect(res.statusCode).toBe(200);
@@ -108,14 +108,13 @@ describe('Article Controller', () => {
       res = httpMocks.createResponse();
 
       // when
-      await articleController.getArticlesByRestaurantId(req, res);
+      await articleController.getArticlesById(req, res);
 
       // then
       expect(res.statusCode).toBe(404);
     });
   });
 
-  // 수정
   describe('update article', () => {
     let toUpdate: Article;
     beforeEach(() => {
@@ -196,5 +195,70 @@ describe('Article Controller', () => {
     });
   });
 
-  // 삭제
+  describe('delete article', () => {
+    let articles: Article[];
+    const beforeArticles = [...test_articles]; // 이전 테스트 영향을 제거하기 위한 초기화용 배열
+    beforeEach(() => {
+      res = httpMocks.createResponse();
+      test_articles.splice(0, test_articles.length);
+      beforeArticles.forEach((article) => test_articles.push(article));
+    });
+
+    it('returns 204 and remove the article if exists', async () => {
+      // given
+      const id = 1;
+      const userId = 1;
+      req = httpMocks.createRequest({
+        params: { id },
+        query: { userId },
+      });
+
+      // when
+      await articleController.deleteArticle(req, res);
+
+      // then
+      expect(res.statusCode).toBe(204);
+      expect(test_articles.filter((article) => article.id === id)).toHaveLength(
+        0,
+      );
+    });
+
+    it('returns 403 if article does not belong to the user', async () => {
+      // given
+      const id = 1;
+      const userId = 4;
+      req = httpMocks.createRequest({
+        params: { id },
+        query: { userId },
+      });
+
+      // when
+      await articleController.deleteArticle(req, res);
+
+      // then
+      expect(res.statusCode).toBe(403);
+      expect(res._getJSONData()).toMatchObject({
+        message: 'Article does not belong to the user!',
+      });
+    });
+
+    it('returns 404 if article does not exist', async () => {
+      // given
+      const id = 12345;
+      const userId = 1;
+      req = httpMocks.createRequest({
+        params: { id },
+        query: { userId },
+      });
+
+      // when
+      await articleController.deleteArticle(req, res);
+
+      // then
+      expect(res.statusCode).toBe(404);
+      expect(res._getJSONData()).toMatchObject({
+        message: 'Article does not exist!',
+      });
+    });
+  });
 });

@@ -5,10 +5,11 @@ const articleRoute = Router();
 
 articleRoute.post('/', articleController.createArticle);
 
-articleRoute.get('/:restaurantId', articleController.getArticlesByRestaurantId);
-
-articleRoute.get('/:restaurantId?:userId', articleController.getArticlesByIds);
+articleRoute.get('/:restaurantId?:userId', articleController.getArticlesById);
 
 articleRoute.put('/:id', articleController.updateArticle);
+
+// 사용자 아이디는 어떻게 전달할지?
+articleRoute.delete('/:id?:userId', articleController.deleteArticle);
 
 export { articleRoute };

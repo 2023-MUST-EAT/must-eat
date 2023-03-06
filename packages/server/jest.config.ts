@@ -2,12 +2,11 @@
 import type { Config } from 'jest';
 
 const config: Config = {
-  transform: { '\\.[jt]sx?$': ['ts-jest', { useESM: true }] },
+  transform: { '\\.[jt]sx?$': 'babel-jest' },
   moduleNameMapper: {
     '(.+)\\.js': '$1',
   },
   extensionsToTreatAsEsm: ['.ts'],
   clearMocks: true,
-  coverageProvider: 'v8',
 };
 export default config;

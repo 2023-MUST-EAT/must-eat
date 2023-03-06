@@ -20,26 +20,28 @@ const createArticle = async (req: Request, res: Response) => {
   }
 };
 
-const getArticlesByRestaurantId = async (req: Request, res: Response) => {
-  const { restaurantId } = req.params;
-  const data = await articleService
-    .getArticlesByRestaurantId(Number(restaurantId))
-    .catch(console.error);
+// const getArticlesByRestaurantId = async (req: Request, res: Response) => {
+//   const { restaurantId } = req.params;
+//   const data = await articleService
+//     .getArticlesByRestaurantId(Number(restaurantId))
+//     .catch(console.error);
 
-  // 추후 검증 로직 수정
-  if (data?.length === 0) return res.sendStatus(404);
+//   // 추후 검증 로직 수정
+//   if (data?.length === 0) return res.sendStatus(404);
 
-  res.status(200).json(data);
-};
+//   res.status(200).json(data);
+// };
 
-const getArticlesByIds = async (req: Request, res: Response) => {
+const getArticlesById = async (req: Request, res: Response) => {
   const { restaurantId } = req.params;
   const { userId } = req.query;
+
+  const reqParam = userId
+    ? { restaurantId: Number(restaurantId), userId: Number(userId) }
+    : { restaurantId: Number(restaurantId) };
+
   const data = await articleService
-    .getArticleById({
-      restaurantId: Number(restaurantId),
-      userId: Number(userId),
-    })
+    .getArticlesById(reqParam)
     .catch(console.error);
 
   if (data?.length === 0) return res.sendStatus(404);
@@ -70,9 +72,22 @@ const updateArticle = async (req: Request, res: Response) => {
   res.status(200).json(data);
 };
 
-export {
-  createArticle,
-  getArticlesByRestaurantId,
-  getArticlesByIds,
-  updateArticle,
+const deleteArticle = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { userId } = req.query;
+
+  let message;
+  await articleService
+    .deleteArticle(Number(id), Number(userId))
+    .catch((e) => (message = e));
+
+  if (message === 'Article does not belong to the user!')
+    return res.status(403).json({ message });
+
+  if (message === 'Article does not exist!')
+    return res.status(404).json({ message });
+
+  res.sendStatus(204);
 };
+
+export { createArticle, getArticlesById, updateArticle, deleteArticle };

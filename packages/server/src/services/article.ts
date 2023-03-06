@@ -35,22 +35,22 @@ const creatArticle = async ({
   return { id: ++id, ...article };
 };
 
-const getArticlesByRestaurantId = async (restaurantId: number) => {
-  return test_articles.filter(
-    (article) => article.restaurantId === restaurantId,
-  );
-};
-
-const getArticleById = async ({
+const getArticlesById = async ({
   restaurantId,
   userId,
 }: {
   restaurantId: number;
-  userId: number;
+  userId?: number;
 }): Promise<Article[]> => {
+  if (userId) {
+    return test_articles.filter(
+      (article) =>
+        article.restaurantId === restaurantId && article.userId === userId,
+    );
+  }
+
   return test_articles.filter(
-    (article) =>
-      article.restaurantId === restaurantId && article.userId === userId,
+    (article) => article.restaurantId === restaurantId,
   );
 };
 
@@ -72,9 +72,19 @@ const updateArticle = async (updateTo: Article): Promise<Article | void> => {
   return article;
 };
 
-export {
-  creatArticle,
-  getArticlesByRestaurantId,
-  getArticleById,
-  updateArticle,
+const deleteArticle = async (
+  id: number,
+  userId: number,
+): Promise<{ message: string } | void> => {
+  const index = test_articles.findIndex((article) => article.id === id);
+
+  if (index === -1) throw 'Article does not exist!';
+
+  if (!test_articles.find((article) => article.userId === userId))
+    throw 'Article does not belong to the user!';
+
+  test_articles.splice(index, 1);
+  return;
 };
+
+export { creatArticle, getArticlesById, updateArticle, deleteArticle };
