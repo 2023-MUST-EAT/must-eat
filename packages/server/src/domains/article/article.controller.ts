@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import * as articleService from '../services/article.js';
+import * as articleService from './article.service.js';
 
 const createArticle = async (req: Request, res: Response) => {
   try {
@@ -19,18 +19,6 @@ const createArticle = async (req: Request, res: Response) => {
     console.error;
   }
 };
-
-// const getArticlesByRestaurantId = async (req: Request, res: Response) => {
-//   const { restaurantId } = req.params;
-//   const data = await articleService
-//     .getArticlesByRestaurantId(Number(restaurantId))
-//     .catch(console.error);
-
-//   // 추후 검증 로직 수정
-//   if (data?.length === 0) return res.sendStatus(404);
-
-//   res.status(200).json(data);
-// };
 
 const getArticlesById = async (req: Request, res: Response) => {
   const { restaurantId } = req.params;

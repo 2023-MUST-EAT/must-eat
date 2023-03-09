@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { Request, Response } from 'express';
 import httpMocks, { MockRequest, MockResponse } from 'node-mocks-http';
-import * as articleController from '../../controllers/article';
+import * as articleController from '../../domains/article/article.controller';
 import { Article, test_articles } from '../../database/data';
 
 describe('Article Controller', () => {

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { Article } from '../../database/data';
-import * as articleService from '../../services/article';
+import * as articleService from '../../domains/article/article.service';
 
 describe('Article Service', () => {
   let restaurantService: any;

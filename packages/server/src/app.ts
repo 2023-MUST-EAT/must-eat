@@ -1,13 +1,14 @@
-import express, { Express, NextFunction, Request, Response } from 'express';
-import morgan from 'morgan';
-import helmet from 'helmet';
-import swaggerJsdoc from 'swagger-jsdoc';
-import swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
+import express, { Express, NextFunction, Request, Response } from 'express';
+import 'express-async-errors';
+import * as OpenAPIValidator from 'express-openapi-validator';
+import helmet from 'helmet';
+import morgan from 'morgan';
+import swaggerUi from 'swagger-ui-express';
+import yaml from 'yamljs';
 
-import { routes } from './routes/index.js';
 import { config } from './config/config.js';
-import { swaggerOptions } from './config/swagger.js';
+import { routes } from './routes.js';
 
 const app: Express = express();
 
@@ -16,25 +17,26 @@ app.use(bodyParser.json());
 app.use(helmet());
 app.use(morgan('tiny'));
 
-const specs = swaggerJsdoc(swaggerOptions);
+const openApiDoc = yaml.load('./docs/openapi.yml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDoc));
 app.use(
-  '/api-docs',
-  swaggerUi.serve,
-  swaggerUi.setup(specs, { explorer: true }),
+  OpenAPIValidator.middleware({
+    apiSpec: './docs/openapi.yml',
+    validateRequests: false,
+  }),
 );
 app.use(routes);
-
-app.get('/', (req: Request, res: Response, next: NextFunction) => {
-  res.send('Hi!');
-});
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   res.sendStatus(404);
 });
 
-app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.error(error);
-  res.sendStatus(500);
+app.use((err: any, req: Request, res: Response, next: NextFunction) => {
+  console.error(err);
+  res.status(err.status || 500).json({
+    message: err.message,
+    errors: err.errors,
+  });
 });
 
 const port = config.port;

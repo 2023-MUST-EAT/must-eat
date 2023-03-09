@@ -1,8 +1,4 @@
-import { NotFound } from 'express-openapi-validator/dist/openapi.validator.js';
-import { Article, test_articles } from '../database/data.js';
-
-// for test
-let id = 0;
+import { Article, test_articles } from '../../database/data.js';
 
 interface ArticleRequest {
   restaurantId: number;
@@ -11,6 +7,7 @@ interface ArticleRequest {
   path: string;
 }
 
+// for test
 const restaurantService = {
   findById: (id: number) =>
     test_articles.filter((article) => article.restaurantId === id).length === 0
@@ -18,6 +15,9 @@ const restaurantService = {
       : id,
 };
 
+// for test
+let id = 0;
+// TODO 같은 내용으로 중복 등록 방지
 const creatArticle = async ({
   restaurantId,
   userId,

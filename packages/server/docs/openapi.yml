@@ -1,0 +1,204 @@
+openapi: '3.0.2'
+info:
+  title: MUST-EAT
+  description: MUST-EAT Express API with Swagger
+  version: '1.0'
+servers:
+  - url: 'http://localhost:8080'
+tags:
+  - name: restaurants
+    description: Methods to access and manage restaurants
+  - name: articles
+    description: Methods to access and manage articles
+
+paths:
+  /article:
+    post:
+      summary: 맛집일기 정보 등록
+      operationId: createArticle
+      tags:
+        - 맛집일기
+      requestBody:
+        description: 맛집 일기 정보
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateArticleRequest'
+      responses:
+        '201':
+          description: 맛집일기 정보 등록 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+  /article/{id}:
+    get:
+      summary: 맛집에 등록된 모든 맛집일기 또는 특정 사용자의 맛집일기 조회
+      operationId: getArticlesById
+      tags:
+        - 맛집일기
+      parameters:
+        - in: path
+          name: restaurantId
+          schema:
+            type: integer
+          required: true
+          description: 맛집 아이디
+        - in: query
+          name: userId
+          schema:
+            type: integer
+          required: false
+          description: 사용자 아이디
+      responses:
+        '200':
+          description: 맛집일기 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ArticleApiResponse'
+    put:
+      summary: 맛집일기 정보 수정
+      operationId: updateArticle
+      tags:
+        - 맛집일기
+      parameters:
+        - name: id
+          in: path
+          description: Article id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '201':
+          description: 맛집일기 정보 수정 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Article'
+    delete:
+      summary: 맛집일기 정보 삭제
+      operationId: deleteArticle
+      tags:
+        - 맛집일기
+      parameters:
+        - name: id
+          in: path
+          description: 맛집일기 아이디
+          schema:
+            type: integer
+          required: true
+        - name: userId
+          in: query
+          description: 사용자 아이디
+          schema:
+            type: integer
+          required: true
+      responses:
+        '204':
+          description: 맛집일기 정보 삭제 성공
+components:
+  schemas:
+    Article:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        restaurantId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int64
+        # createdAt:
+        #   type: string
+        #   format: date-time
+        #   description: Creation date
+        #   example: '2023-01-30T08:30:20.000Z'
+        # title:
+        #   type: string
+        # username:
+        #   type: string
+        content:
+          type: string
+          minLength: 3
+        image_url:
+          type: string
+          format: url
+          nullable: true
+      required:
+        - id
+        - content
+        - createdAt
+        - userId
+        - url
+      example:
+        id: 1
+        restaurantId: 1
+        userId: 1
+        content: Best restaurant ever
+        createdAt: '2023-01-30T08:30:20.000Z'
+        # title: title
+        # username: johndoe
+        url: null
+    CreateArticleRequest:
+      type: object
+      properties:
+        content:
+          type: string
+          minLength: 3
+        username:
+          type: string
+        name:
+          type: string
+        userId:
+          type: integer
+          format: int64
+        image_url:
+          type: string
+          format: url
+          nullable: true
+      required:
+        - restaurantId
+        - userId
+        - content
+      example:
+        restaurantId: 1
+        userId: 1
+        # title: title
+        # username: johndoe
+        content: Best restaurant ever
+        url: null
+    ErrorApiResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required:
+        - message
+      example:
+        message: 'Something went wrong 🤪'
+    ArticleApiResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Article'
+  # securitySchemes:
+  #   jwt_auth:
+  #     description: Bearer token authorization with JWT
+  #     type: http
+  #     scheme: bearer
+  #     bearerFormat: JWT
+  # securitySchemes:
+  #   regularSecurity:
+  #     type: http
+  #     scheme: basic
+  #   OAuth2:
+  #     type: oauth2
+  #     flows:
+  #       authorizationCode:
+  #         scopes:
+  #           readOnly: read objects in your account
+  #         authorizationUrl: https://example.com/oauth/authorize
+  #         tokenUrl: https://example.com/oauth/token
