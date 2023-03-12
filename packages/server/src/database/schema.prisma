@@ -11,6 +11,39 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  email String @unique
+  id       Int       @id @default(autoincrement())
+  email    String    @unique
+  journals Journal[]
+}
+
+model Restaurant {
+  id        Int                    @id @default(autoincrement())
+  name      String
+  address   String
+  phone     String
+  category  String
+  tags      String
+  image_url String
+  kakaoId   String                 @unique
+  journals  JornalsOnRestaurants[]
+}
+
+model Journal {
+  id          Int                    @id @default(autoincrement())
+  user        User                   @relation(fields: [userId], references: [id])
+  userId      Int
+  content     String
+  image_url   String
+  went_day    DateTime
+  created_at  DateTime               @default(now())
+  restaurants JornalsOnRestaurants[]
+}
+
+model JornalsOnRestaurants {
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id])
+  restaurantId Int
+  journal      Journal    @relation(fields: [journalId], references: [id])
+  journalId    Int
+
+  @@id([restaurantId, journalId])
 }
