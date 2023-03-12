@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 
-let RestaurantRepository: Array<RestaurantData> = []
+const RestaurantRepository: Repository = {
+    restaurants: [],
+    count: 0
+}
 
 type RestaurantData = {
     id?: number;
@@ -14,6 +17,12 @@ type RestaurantData = {
     kakaoId: number;
 }
 
+type Repository = {
+    restaurants: RestaurantData[];
+    count: number;
+}
+
+
 export function getAllRestaurants(req:Request, res:Response){
     res.status(200).json(RestaurantRepository);
     return;
@@ -22,7 +31,7 @@ export function getAllRestaurants(req:Request, res:Response){
 export function getRestaurant(req: Request, res: Response){
     const id = Number(req.params.id);
     
-    const findData = RestaurantRepository.find( restaurant => restaurant.id === id );
+    const findData = RestaurantRepository.restaurants.find( restaurant => restaurant.id === id );
 
     if( !findData ){
         res.status(404).send('No Data');
@@ -36,13 +45,15 @@ export function getRestaurant(req: Request, res: Response){
 export function registerRestaurant(req: Request, res: Response){
     const { name, address, image_url, category, phone, homepage, kakaoId, menus } = req.body;
 
-    const dupCheck = RestaurantRepository.find( restaurant => restaurant.kakaoId === kakaoId);
+    const dupCheck = RestaurantRepository.restaurants.find( restaurant => restaurant.kakaoId === kakaoId);
 
     if( dupCheck ){
-        res.status(409).json({message: 'Success'});
+        res.status(409).json({message: 'Duplicate Restaurant'});
+        return;
     }
 
     const newData: RestaurantData = {
+        id: ++RestaurantRepository.count,
         name,
         address,
         imageUrl: image_url,
@@ -53,13 +64,14 @@ export function registerRestaurant(req: Request, res: Response){
         menus
     }
 
-    RestaurantRepository.push(newData);
+    RestaurantRepository.restaurants.push(newData);
 
     res.status(201).json({
         message: 'Success'
     })
 }
 
+// TODO sum to save
 export function updateRestaurant(req: Request, res: Response){
     const { id } = req.params;
     const { name, address, image_url, category, phone, homepage, kakaoId, menus } = req.body;
@@ -75,7 +87,7 @@ export function updateRestaurant(req: Request, res: Response){
         menus
     }
 
-    const findIndex = RestaurantRepository.findIndex(restaurant => restaurant.id === Number(id));
+    const findIndex = RestaurantRepository.restaurants.findIndex(restaurant => restaurant.id === Number(id));
     
     
     if( findIndex === -1 ){
@@ -98,7 +110,7 @@ export function updateRestaurant(req: Request, res: Response){
 export function deleteRestaurant(req: Request, res: Response){
     const { id } = req.params;
 
-    const findData = RestaurantRepository.find( restaurant => restaurant.id === Number(id) );
+    const findData = RestaurantRepository.restaurants.find( restaurant => restaurant.id === Number(id) );
 
     if( !findData ){
         res.status(400).json({
@@ -106,7 +118,7 @@ export function deleteRestaurant(req: Request, res: Response){
         })
     }
 
-    RestaurantRepository = RestaurantRepository.filter( restaurant => restaurant.id !== Number(id));
+    RestaurantRepository.restaurants = RestaurantRepository.restaurants.filter( restaurant => restaurant.id !== Number(id));
 
     res.send(204).json({
         message: 'delete Success'

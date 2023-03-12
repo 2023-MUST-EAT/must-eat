@@ -19,12 +19,12 @@ app.use(morgan('tiny'));
 
 const openApiDoc = yaml.load('./docs/openapi.yml');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDoc));
-app.use(
-  OpenAPIValidator.middleware({
-    apiSpec: './docs/openapi.yml',
-    validateRequests: false,
-  }),
-);
+// app.use(
+//   OpenAPIValidator.middleware({
+//     apiSpec: './docs/openapi.yml',
+//     validateRequests: false,
+//   }),
+// );
 app.use(routes);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
