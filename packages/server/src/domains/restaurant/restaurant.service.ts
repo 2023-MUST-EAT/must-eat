@@ -1,32 +1,37 @@
 import { Repository,RestaurantData, RestaurantRepository } from './schema.js';
 
 
-export function getAllRestaurantData(): Repository {
-  return RestaurantRepository;
+export function getAllRestaurantData(): Promise<Object> {
+  return new Promise( resolve=> {
+    resolve(RestaurantRepository);
+  });
 }
 
-export function getRestaurantData(id: number): RestaurantData {
+export function getRestaurantData(id: number) {
   const findData = RestaurantRepository.restaurants.find( restaurant => restaurant.id === id );
 
   console.log(findData);
 
-  if( !findData ){
-    throw 'Not found RestaurantData'
-  }
+  return new Promise( (resolve, reject) => {
+    if( !findData ){
+      return reject(new Error('not found data'));
+    }
 
-  return findData;
+    resolve(findData);
+  })
 }
 
 export function registerRestaurant(inputData: RestaurantData){
+  return new Promise( (resolve, reject)=> {
+    const dupCheck = RestaurantRepository.restaurants.find( restaurant => restaurant.kakaoId === inputData.kakaoId);
+    if(dupCheck){
+      reject(new Error('duplication data'));
+    }
 
-  const dupCheck = RestaurantRepository.restaurants.find( restaurant => restaurant.kakaoId === inputData.kakaoId);
+    RestaurantRepository.restaurants.push({id: ++RestaurantRepository.count, ...inputData});
 
-  if (dupCheck) {
-    throw 'already registered restaurant';
-  }
-
-  RestaurantRepository.restaurants.push({id: ++RestaurantRepository.count, ...inputData});
-  return;
+    resolve(null);
+  })
 }
 
 export function deleteRestaurant(id: number){
