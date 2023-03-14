@@ -1,4 +1,4 @@
-type RestaurantData = {
+export type RestaurantData = {
   id?: number;
   name: string;
   address: string;
@@ -10,7 +10,7 @@ type RestaurantData = {
   kakaoId: number;
 }
 
-type Repository = {
+export type Repository = {
   restaurants: RestaurantData[];
   count: number;
 }
